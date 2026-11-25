@@ -35,11 +35,76 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body class="aerospace-canvas-bg orbital-hairlines selection:bg-electric selection:text-white">
+  <!-- Theme background photography layer -->
+  <div id="themeBgLayer" class="theme-bg-layer" aria-hidden="true"></div>
+
   <!-- Subtle top scroll progress bar -->
   <div id="scrollLaserBar" class="fixed top-0 left-0 h-[2px] w-0 bg-gradient-to-r from-electricBright via-white to-racingBright z-[60] pointer-events-none" aria-hidden="true"></div>
 
   <canvas id="asteroidBgCanvas" aria-hidden="true"></canvas>
   <div id="customWaterCursor" aria-hidden="true"></div>
+
+  <!-- PERSONALIZATION ONBOARDING OVERLAY -->
+  <div id="onboardingOverlay" class="onboarding-overlay" role="dialog" aria-modal="true" aria-labelledby="onboardingMainTitle">
+    <div class="onboarding-panel">
+      <button type="button" id="onboardingCloseBtn" class="onboarding-close" aria-label="Close">&times;</button>
+
+      <div class="onboarding-progress" id="onboardingProgress" aria-hidden="true">
+        <div class="onboarding-progress-dot is-current" data-step="0"></div>
+        <div class="onboarding-progress-dot" data-step="1"></div>
+        <div class="onboarding-progress-dot" data-step="2"></div>
+      </div>
+
+      <!-- STEP 0: Language -->
+      <div class="onboarding-step is-visible" data-step="0" id="onboardingStepLang">
+        <h2 class="onboarding-title" id="onboardingMainTitle" data-onb="lang_title">Choose Your Language</h2>
+        <p class="onboarding-desc" data-onb="lang_desc">Select your preferred language to personalize the experience.</p>
+        <div class="onboarding-lang-grid" id="onboardingLangGrid">
+          <button type="button" class="onboarding-lang-btn is-selected" data-lang="en"><span class="onboarding-lang-flag">🇬🇧</span>English</button>
+          <button type="button" class="onboarding-lang-btn" data-lang="si"><span class="onboarding-lang-flag">🇱🇰</span>සිංහල</button>
+          <button type="button" class="onboarding-lang-btn" data-lang="ta"><span class="onboarding-lang-flag">🇱🇰</span>தமிழ்</button>
+          <button type="button" class="onboarding-lang-btn" data-lang="es"><span class="onboarding-lang-flag">🇪🇸</span>Español</button>
+          <button type="button" class="onboarding-lang-btn" data-lang="fr"><span class="onboarding-lang-flag">🇫🇷</span>Français</button>
+          <button type="button" class="onboarding-lang-btn" data-lang="hi"><span class="onboarding-lang-flag">🇮🇳</span>हिन्दी</button>
+        </div>
+        <div class="onboarding-actions">
+          <button type="button" class="onboarding-btn onboarding-btn-ghost" id="onboardingSkipBtn" data-onb="skip">Skip</button>
+          <button type="button" class="onboarding-btn onboarding-btn-primary" id="onboardingContinueLang" data-onb="continue">Continue</button>
+        </div>
+      </div>
+
+      <!-- STEP 1: Category / Purpose -->
+      <div class="onboarding-step" data-step="1" id="onboardingStepPurpose">
+        <h2 class="onboarding-title" data-onb="q1_title">What type of website experience do you like?</h2>
+        <p class="onboarding-desc" data-onb="q1_desc">Choose the experience that matches your vision.</p>
+        <div class="onboarding-options" id="onboardingPurposeOptions"></div>
+        <div class="onboarding-actions">
+          <button type="button" class="onboarding-btn onboarding-btn-ghost" data-onb-back data-onb="back">Back</button>
+          <div class="flex gap-2">
+            <button type="button" class="onboarding-btn onboarding-btn-ghost" data-onb-skip data-onb="skip">Skip</button>
+            <button type="button" class="onboarding-btn onboarding-btn-primary" id="onboardingContinuePurpose" data-onb="continue" disabled>Continue</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 2: Visual Style -->
+      <div class="onboarding-step" data-step="2" id="onboardingStepStyle">
+        <h2 class="onboarding-title" data-onb="q2_title">What visual style do you prefer?</h2>
+        <p class="onboarding-desc" data-onb="q2_desc">Pick the look that feels right for you.</p>
+        <div class="onboarding-visual-grid" id="onboardingStyleOptions"></div>
+        <div class="onboarding-actions">
+          <button type="button" class="onboarding-btn onboarding-btn-ghost" data-onb-back data-onb="back">Back</button>
+          <div class="flex gap-2">
+            <button type="button" class="onboarding-btn onboarding-btn-ghost" data-onb-skip data-onb="skip">Skip</button>
+            <button type="button" class="onboarding-btn onboarding-btn-primary" id="onboardingFinishBtn" data-onb="finish" disabled>Create Experience</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reset personalization control -->
+  <button type="button" id="resetPersonalizationBtn" data-onb="reset_pref">Reset Theme</button>
 
   <header class="fixed top-0 left-0 right-0 z-50 bg-obsidian/95 backdrop-blur-md border-b border-white/15">
     <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 min-h-14 py-1.5 flex flex-wrap sm:flex-nowrap items-center justify-between gap-2 sm:gap-3">
@@ -125,6 +190,16 @@
 
   <main id="top" class="pt-20 sm:pt-14">
     <section id="heroSection" class="relative min-h-[calc(100vh-3.5rem)] flex flex-col justify-between max-w-[1440px] mx-auto px-3 sm:px-8 pt-4 sm:pt-6 pb-8 overflow-hidden">
+      <!-- Category-aware hero photo slider (inactive on original tech theme) -->
+      <div id="heroPhotoSlider" class="hero-photo-slider" aria-hidden="true">
+        <div class="hero-photo-slide is-active" data-slide="0"></div>
+        <div class="hero-photo-slide" data-slide="1"></div>
+        <div class="hero-photo-slide" data-slide="2"></div>
+        <div class="hero-photo-slide" data-slide="3"></div>
+        <div class="hero-photo-slide" data-slide="4"></div>
+        <div class="hero-photo-overlay"></div>
+      </div>
+
       <div data-shard="top" class="shard-module relative z-20 flex items-center justify-between font-mono text-[10px] sm:text-xs tracking-[0.16em] sm:tracking-[0.2em] text-white/75 uppercase">
         <span data-i18n="hero_edition_left">SYS.ARCHITECT // FULLSTACK</span>
         <span class="text-white font-semibold" data-i18n="hero_edition_right">2026 EDITION</span>
