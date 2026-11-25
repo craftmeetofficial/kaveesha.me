@@ -2368,6 +2368,14 @@
     function setLanguage(lang) {
       if (!TRANSLATIONS[lang]) return;
       currentLang = lang;
+      try {
+        const raw = localStorage.getItem('ks_portfolio_prefs_v3');
+        if (raw) {
+          const prefs = JSON.parse(raw);
+          prefs.lang = lang;
+          localStorage.setItem('ks_portfolio_prefs_v3', JSON.stringify(prefs));
+        }
+      } catch (_) {}
       const dict = TRANSLATIONS[lang];
 
       document.querySelectorAll('.lang-btn').forEach((btn) => {
@@ -2581,3 +2589,535 @@ func RouteSignal(channel string, latencyMs int) string {
         transmitBtn.textContent = "TRANSMIT MESSAGE →";
       }
     });
+
+
+    /* ==========================================================================
+       PERSONALIZATION ONBOARDING & THEME ENGINE (v3)
+       Language → 2 questions only → full visual transform
+       Technology / Software / IT keeps exact original UI
+       Hero photo slider with fade + zoom every 3s
+       ========================================================================== */
+    (function initPersonalizationEngine() {
+      const STORAGE_KEY = 'ks_portfolio_prefs_v3';
+      const overlay = document.getElementById('onboardingOverlay');
+      const themeBgLayer = document.getElementById('themeBgLayer');
+      const resetBtn = document.getElementById('resetPersonalizationBtn');
+      const heroSlider = document.getElementById('heroPhotoSlider');
+      if (!overlay) return;
+
+      const TECH_CATEGORIES = new Set(['software', 'tech', 'it', 'programming', 'webdev']);
+
+      const PURPOSE_OPTIONS = [
+        { id: 'business', icon: '🏢', labelKey: 'purpose_business' },
+        { id: 'bakery', icon: '🧁', labelKey: 'purpose_bakery' },
+        { id: 'pcshop', icon: '🖥️', labelKey: 'purpose_pcshop' },
+        { id: 'software', icon: '💻', labelKey: 'purpose_software' },
+        { id: 'store', icon: '🛒', labelKey: 'purpose_store' },
+        { id: 'portfolio', icon: '✨', labelKey: 'purpose_portfolio' },
+        { id: 'restaurant', icon: '🍽️', labelKey: 'purpose_restaurant' },
+        { id: 'other', icon: '🎯', labelKey: 'purpose_other' },
+      ];
+
+      const STYLE_OPTIONS = [
+        { id: 'colorful', labelKey: 'style_colorful', img: 'https://images.unsplash.com/photo-1557672172-298e090bd0f1?w=400&q=80' },
+        { id: 'minimal', labelKey: 'style_minimal', img: 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=400&q=80' },
+        { id: 'modern', labelKey: 'style_modern', img: 'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=400&q=80' },
+        { id: 'luxury', labelKey: 'style_luxury', img: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400&q=80' },
+        { id: 'futuristic', labelKey: 'style_futuristic', img: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400&q=80' },
+        { id: 'natural', labelKey: 'style_natural', img: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&q=80' },
+      ];
+
+      // High-quality category photography for hero slider + ambient layer
+      const CATEGORY_PHOTOS = {
+        bakery: [
+          'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=1600&q=80',
+          'https://images.unsplash.com/photo-1486427944299-d1955d23e34d?w=1600&q=80',
+          'https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?w=1600&q=80',
+          'https://images.unsplash.com/photo-1563729784474-d77dbb933a9e?w=1600&q=80',
+          'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=1600&q=80',
+        ],
+        pcshop: [
+          'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?w=1600&q=80',
+          'https://images.unsplash.com/photo-1593640408182-31c70c8268f5?w=1600&q=80',
+          'https://images.unsplash.com/photo-1547082299-de196ea013d6?w=1600&q=80',
+          'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1600&q=80',
+          'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=1600&q=80',
+        ],
+        business: [
+          'https://images.unsplash.com/photo-1497366216548-37526070297c?w=1600&q=80',
+          'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1600&q=80',
+          'https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=1600&q=80',
+          'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1600&q=80',
+        ],
+        restaurant: [
+          'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1600&q=80',
+          'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1600&q=80',
+          'https://images.unsplash.com/photo-1559339352-11d035aa65de?w=1600&q=80',
+          'https://images.unsplash.com/photo-1552566626-52f8b828add9?w=1600&q=80',
+        ],
+        portfolio: [
+          'https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=1600&q=80',
+          'https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?w=1600&q=80',
+          'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=1600&q=80',
+        ],
+        store: [
+          'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1600&q=80',
+          'https://images.unsplash.com/photo-1472851294608-062f824d29cc?w=1600&q=80',
+          'https://images.unsplash.com/photo-1607083206869-4c79742c5a46?w=1600&q=80',
+        ],
+        other: [
+          'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1600&q=80',
+          'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=1600&q=80',
+        ],
+      };
+
+      function resolveThemeClass(purpose, style) {
+        if (!purpose || TECH_CATEGORIES.has(purpose)) return null;
+        if (purpose === 'bakery') return 'theme-bakery';
+        if (purpose === 'pcshop') return 'theme-pcshop';
+        if (purpose === 'business') return 'theme-business';
+        if (purpose === 'restaurant') return 'theme-restaurant';
+        if (purpose === 'portfolio') return 'theme-portfolio';
+        if (purpose === 'store') return 'theme-store';
+        // other — style-driven
+        if (style === 'colorful' || style === 'natural') return 'theme-bakery';
+        if (style === 'futuristic') return 'theme-pcshop';
+        if (style === 'luxury') return 'theme-restaurant';
+        if (style === 'minimal' || style === 'modern') return 'theme-portfolio';
+        return 'theme-business';
+      }
+
+      const ONB_I18N = {
+        en: {
+          lang_title: "Choose Your Language",
+          lang_desc: "Select your preferred language to personalize the experience.",
+          q1_title: "What type of website experience do you like?",
+          q1_desc: "Choose the experience that matches your vision.",
+          q2_title: "What visual style do you prefer?",
+          q2_desc: "Pick the look that feels right for you.",
+          welcome_title: "Let's Create Something Amazing!",
+          welcome_desc: "Tell me a little about your vision. I'll craft the perfect design experience for you.",
+          continue: "Continue",
+          back: "Back",
+          skip: "Skip",
+          finish: "Create Experience",
+          reset_pref: "Reset Theme",
+          purpose_business: "Business",
+          purpose_bakery: "Bakery / Cake Shop",
+          purpose_pcshop: "PC Shop / Gaming",
+          purpose_software: "Software / IT / Technology",
+          purpose_store: "Online Store",
+          purpose_portfolio: "Personal Portfolio",
+          purpose_restaurant: "Restaurant / Hotel",
+          purpose_other: "Other",
+          style_colorful: "Colorful & Creative",
+          style_minimal: "Minimal & Clean",
+          style_modern: "Modern & Professional",
+          style_luxury: "Luxury & Elegant",
+          style_futuristic: "Futuristic & Neon",
+          style_natural: "Nature & Relaxing",
+        },
+        si: {
+          lang_title: "ඔබේ භාෂාව තෝරන්න",
+          lang_desc: "අත්දැකීම පුද්ගලීකරණය කිරීමට ඔබේ මනාප භාෂාව තෝරන්න.",
+          q1_title: "ඔබ කැමති වෙබ් අත්දැකීම කුමක්ද?",
+          q1_desc: "ඔබේ දර්ශනයට ගැලපෙන අත්දැකීම තෝරන්න.",
+          q2_title: "ඔබ කැමති දෘශ්‍ය ශෛලිය කුමක්ද?",
+          q2_desc: "ඔබට ගැලපෙන පෙනුම තෝරන්න.",
+          welcome_title: "අපි අපූරු දෙයක් නිර්මාණය කරමු!",
+          welcome_desc: "ඔබේ දර්ශනය ගැන මට කියන්න. මම ඔබට ගැලපෙන නිර්මාණ අත්දැකීම සාදන්නම්.",
+          continue: "ඉදිරියට", back: "ආපසු", skip: "මඟහරින්න", finish: "අත්දැකීම නිර්මාණය කරන්න", reset_pref: "තේමාව යළි සකසන්න",
+          purpose_business: "ව්‍යාපාරික", purpose_bakery: "බේකරි / කේක්", purpose_pcshop: "පරිගණක / ගේමිං",
+          purpose_software: "මෘදුකාංග / IT / තාක්ෂණය", purpose_store: "ඔන්ලයින් වෙළඳසැල",
+          purpose_portfolio: "පුද්ගලික පෝට්ෆෝලියෝ", purpose_restaurant: "අවන්හල / හෝටලය", purpose_other: "වෙනත්",
+          style_colorful: "වර්ණවත් හා නිර්මාණශීලී", style_minimal: "සරල හා පිරිසිදු",
+          style_modern: "නවීන හා වෘත්තීය", style_luxury: "සුඛෝපභෝගී හා අලංකාර",
+          style_futuristic: "අනාගත හා නියොන්", style_natural: "ස්වභාවික හා සන්සුන්",
+        },
+        ta: {
+          lang_title: "உங்கள் மொழியைத் தேர்ந்தெடுக்கவும்",
+          lang_desc: "அனுபவத்தை தனிப்பயனாக்க உங்கள் விருப்ப மொழியைத் தேர்ந்தெடுக்கவும்.",
+          q1_title: "நீங்கள் விரும்பும் வலை அனுபவம் என்ன?",
+          q1_desc: "உங்கள் பார்வைக்கு ஏற்ற அனுபவத்தைத் தேர்ந்தெடுக்கவும்.",
+          q2_title: "நீங்கள் விரும்பும் காட்சி பாணி என்ன?",
+          q2_desc: "உங்களுக்குப் பொருந்தும் தோற்றத்தைத் தேர்ந்தெடுக்கவும்.",
+          welcome_title: "அற்புதமான ஒன்றை உருவாக்குவோம்!",
+          welcome_desc: "உங்கள் பார்வையைப் பற்றி சொல்லுங்கள். உங்களுக்கு ஏற்ற வடிவமைப்பை உருவாக்குவேன்.",
+          continue: "தொடரவும்", back: "பின்செல்", skip: "தவிர்", finish: "அனுபவத்தை உருவாக்கு", reset_pref: "தீம் மீட்டமை",
+          purpose_business: "வணிகம்", purpose_bakery: "பேக்கரி / கேக்", purpose_pcshop: "கணினி / கேமிங்",
+          purpose_software: "மென்பொருள் / IT / தொழில்நுட்பம்", purpose_store: "ஆன்லைன் கடை",
+          purpose_portfolio: "தனிப்பட்ட போர்ட்ஃபோலியோ", purpose_restaurant: "உணவகம் / ஹோட்டல்", purpose_other: "மற்றவை",
+          style_colorful: "வண்ணமயமான & படைப்பு", style_minimal: "குறைந்தபட்ச & சுத்தமான",
+          style_modern: "நவீன & தொழில்முறை", style_luxury: "ஆடம்பர & நேர்த்தியான",
+          style_futuristic: "எதிர்கால & நியான்", style_natural: "இயற்கை & ஓய்வு",
+        },
+        es: {
+          lang_title: "Elige tu idioma",
+          lang_desc: "Selecciona tu idioma preferido para personalizar la experiencia.",
+          q1_title: "¿Qué tipo de experiencia web te gusta?",
+          q1_desc: "Elige la experiencia que coincida con tu visión.",
+          q2_title: "¿Qué estilo visual prefieres?",
+          q2_desc: "Elige el aspecto que se sienta bien para ti.",
+          welcome_title: "¡Creemos algo increíble!",
+          welcome_desc: "Cuéntame un poco sobre tu visión. Crearé la experiencia de diseño perfecta para ti.",
+          continue: "Continuar", back: "Atrás", skip: "Omitir", finish: "Crear experiencia", reset_pref: "Restablecer tema",
+          purpose_business: "Negocios", purpose_bakery: "Panadería / Pastelería", purpose_pcshop: "PC / Gaming",
+          purpose_software: "Software / IT / Tecnología", purpose_store: "Tienda en línea",
+          purpose_portfolio: "Portafolio personal", purpose_restaurant: "Restaurante / Hotel", purpose_other: "Otro",
+          style_colorful: "Colorido y creativo", style_minimal: "Minimalista y limpio",
+          style_modern: "Moderno y profesional", style_luxury: "Lujo y elegante",
+          style_futuristic: "Futurista y neón", style_natural: "Naturaleza y relajante",
+        },
+        fr: {
+          lang_title: "Choisissez votre langue",
+          lang_desc: "Sélectionnez votre langue préférée pour personnaliser l'expérience.",
+          q1_title: "Quel type d'expérience web aimez-vous ?",
+          q1_desc: "Choisissez l'expérience qui correspond à votre vision.",
+          q2_title: "Quel style visuel préférez-vous ?",
+          q2_desc: "Choisissez l'apparence qui vous convient.",
+          welcome_title: "Créons quelque chose d'incroyable !",
+          welcome_desc: "Parlez-moi un peu de votre vision. Je créerai l'expérience de design parfaite pour vous.",
+          continue: "Continuer", back: "Retour", skip: "Passer", finish: "Créer l'expérience", reset_pref: "Réinitialiser le thème",
+          purpose_business: "Entreprise", purpose_bakery: "Boulangerie / Pâtisserie", purpose_pcshop: "PC / Gaming",
+          purpose_software: "Logiciel / IT / Technologie", purpose_store: "Boutique en ligne",
+          purpose_portfolio: "Portfolio personnel", purpose_restaurant: "Restaurant / Hôtel", purpose_other: "Autre",
+          style_colorful: "Coloré et créatif", style_minimal: "Minimal et épuré",
+          style_modern: "Moderne et professionnel", style_luxury: "Luxe et élégant",
+          style_futuristic: "Futuriste et néon", style_natural: "Nature et relaxant",
+        },
+        hi: {
+          lang_title: "अपनी भाषा चुनें",
+          lang_desc: "अनुभव को व्यक्तिगत बनाने के लिए अपनी पसंदीदा भाषा चुनें।",
+          q1_title: "आप किस प्रकार का वेब अनुभव पसंद करते हैं?",
+          q1_desc: "अपने विजन से मेल खाने वाला अनुभव चुनें।",
+          q2_title: "आप कौन सी विज़ुअल स्टाइल पसंद करते हैं?",
+          q2_desc: "वह लुक चुनें जो आपको सही लगे।",
+          welcome_title: "आइए कुछ अद्भुत बनाएं!",
+          welcome_desc: "अपने विजन के बारे में थोड़ा बताएं। मैं आपके लिए सही डिज़ाइन अनुभव बनाऊंगा।",
+          continue: "जारी रखें", back: "वापस", skip: "छोड़ें", finish: "अनुभव बनाएं", reset_pref: "थीम रीसेट करें",
+          purpose_business: "बिज़नेस", purpose_bakery: "बेकरी / केक शॉप", purpose_pcshop: "पीसी / गेमिंग",
+          purpose_software: "सॉफ्टवेयर / IT / टेक्नोलॉजी", purpose_store: "ऑनलाइन स्टोर",
+          purpose_portfolio: "पर्सनल पोर्टफोलियो", purpose_restaurant: "रेस्तरां / होटल", purpose_other: "अन्य",
+          style_colorful: "रंगीन और रचनात्मक", style_minimal: "मिनिमल और साफ़",
+          style_modern: "आधुनिक और पेशेवर", style_luxury: "लक्ज़री और एलिगेंट",
+          style_futuristic: "फ्यूचरिस्टिक और नियॉन", style_natural: "नेचर और रिलैक्सिंग",
+        },
+      };
+
+      let state = {
+        step: 0,
+        lang: 'en',
+        purpose: null,
+        style: null,
+        completed: false,
+      };
+
+      let heroTimer = null;
+      let heroIndex = 0;
+      let heroPhotos = [];
+
+      function loadPrefs() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) {
+            // migrate from v2 if present
+            const v2 = localStorage.getItem('ks_portfolio_prefs_v3');
+            if (v2) {
+              const p = JSON.parse(v2);
+              return { lang: p.lang, purpose: p.purpose, style: p.style, completed: p.completed };
+            }
+            return null;
+          }
+          return JSON.parse(raw);
+        } catch (_) { return null; }
+      }
+
+      function savePrefs() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify({
+            lang: state.lang,
+            purpose: state.purpose,
+            style: state.style,
+            completed: state.completed,
+            ts: Date.now(),
+          }));
+        } catch (_) {}
+      }
+
+      function t(key) {
+        const dict = ONB_I18N[state.lang] || ONB_I18N.en;
+        return dict[key] || ONB_I18N.en[key] || key;
+      }
+
+      function applyOnboardingI18n() {
+        document.querySelectorAll('[data-onb]').forEach((el) => {
+          const key = el.getAttribute('data-onb');
+          if (key) el.textContent = t(key);
+        });
+      }
+
+      function updateProgress() {
+        document.querySelectorAll('.onboarding-progress-dot').forEach((dot) => {
+          const s = Number(dot.getAttribute('data-step'));
+          dot.classList.remove('is-current', 'is-done');
+          if (s < state.step) dot.classList.add('is-done');
+          else if (s === state.step) dot.classList.add('is-current');
+        });
+      }
+
+      function showStep(n) {
+        state.step = n;
+        document.querySelectorAll('.onboarding-step').forEach((el) => {
+          el.classList.toggle('is-visible', Number(el.getAttribute('data-step')) === n);
+        });
+        updateProgress();
+        if (n === 1) {
+          const titleEl = document.querySelector('#onboardingStepPurpose .onboarding-title');
+          const descEl = document.querySelector('#onboardingStepPurpose .onboarding-desc');
+          if (titleEl && !titleEl.dataset.welcomed) {
+            titleEl.textContent = t('welcome_title');
+            if (descEl) descEl.textContent = t('welcome_desc') + ' ' + t('q1_desc');
+            titleEl.dataset.welcomed = '1';
+          } else if (titleEl) {
+            titleEl.textContent = t('q1_title');
+            if (descEl) descEl.textContent = t('q1_desc');
+          }
+          renderPurposeOptions();
+        }
+        if (n === 2) renderStyleOptions();
+      }
+
+      function renderPurposeOptions() {
+        const container = document.getElementById('onboardingPurposeOptions');
+        if (!container) return;
+        container.innerHTML = PURPOSE_OPTIONS.map((opt) => `
+          <button type="button" class="onboarding-option ${state.purpose === opt.id ? 'is-selected' : ''}" data-purpose="${opt.id}">
+            <span class="onboarding-option-icon">${opt.icon}</span>
+            <span>${t(opt.labelKey)}</span>
+          </button>
+        `).join('');
+        container.querySelectorAll('[data-purpose]').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            state.purpose = btn.getAttribute('data-purpose');
+            container.querySelectorAll('.onboarding-option').forEach((b) => b.classList.remove('is-selected'));
+            btn.classList.add('is-selected');
+            const cont = document.getElementById('onboardingContinuePurpose');
+            if (cont) cont.disabled = false;
+          });
+        });
+      }
+
+      function renderStyleOptions() {
+        const container = document.getElementById('onboardingStyleOptions');
+        if (!container) return;
+        container.innerHTML = STYLE_OPTIONS.map((opt) => `
+          <button type="button" class="onboarding-visual-card ${state.style === opt.id ? 'is-selected' : ''}" data-style="${opt.id}">
+            <img src="${opt.img}" alt="" loading="lazy" onerror="this.style.background='#222'" />
+            <span class="onboarding-visual-label">${t(opt.labelKey)}</span>
+          </button>
+        `).join('');
+        container.querySelectorAll('[data-style]').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            state.style = btn.getAttribute('data-style');
+            container.querySelectorAll('.onboarding-visual-card').forEach((b) => b.classList.remove('is-selected'));
+            btn.classList.add('is-selected');
+            const cont = document.getElementById('onboardingFinishBtn');
+            if (cont) cont.disabled = false;
+          });
+        });
+      }
+
+      function clearThemeClasses() {
+        document.body.classList.remove(
+          'theme-bakery', 'theme-pcshop', 'theme-business',
+          'theme-restaurant', 'theme-portfolio', 'theme-store'
+        );
+      }
+
+      function stopHeroSlider() {
+        if (heroTimer) {
+          clearInterval(heroTimer);
+          heroTimer = null;
+        }
+        if (heroSlider) {
+          heroSlider.classList.remove('is-enabled');
+          heroSlider.querySelectorAll('.hero-photo-slide').forEach((s) => {
+            s.classList.remove('is-active', 'is-kenburns');
+            s.style.backgroundImage = '';
+          });
+        }
+      }
+
+      function startHeroSlider(purpose) {
+        stopHeroSlider();
+        if (!heroSlider || !purpose || TECH_CATEGORIES.has(purpose)) return;
+
+        heroPhotos = CATEGORY_PHOTOS[purpose] || CATEGORY_PHOTOS.other || [];
+        if (!heroPhotos.length) return;
+
+        const slides = heroSlider.querySelectorAll('.hero-photo-slide');
+        slides.forEach((slide, i) => {
+          if (i < heroPhotos.length) {
+            slide.style.backgroundImage = `url('${heroPhotos[i]}')`;
+            // preload
+            const img = new Image();
+            img.src = heroPhotos[i];
+          }
+        });
+
+        heroIndex = 0;
+        slides[0]?.classList.add('is-active', 'is-kenburns');
+        heroSlider.classList.add('is-enabled');
+
+        const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (prefersReduced || heroPhotos.length < 2) return;
+
+        heroTimer = setInterval(() => {
+          const slidesNow = heroSlider.querySelectorAll('.hero-photo-slide');
+          slidesNow[heroIndex]?.classList.remove('is-active', 'is-kenburns');
+          heroIndex = (heroIndex + 1) % Math.min(heroPhotos.length, slidesNow.length);
+          slidesNow[heroIndex]?.classList.add('is-active', 'is-kenburns');
+          // preload next
+          const next = (heroIndex + 1) % heroPhotos.length;
+          const pre = new Image();
+          pre.src = heroPhotos[next];
+        }, 3000);
+      }
+
+      function applyTheme() {
+        clearThemeClasses();
+        stopHeroSlider();
+
+        const themeClass = resolveThemeClass(state.purpose, state.style);
+
+        if (themeBgLayer) {
+          themeBgLayer.classList.remove('is-active');
+          themeBgLayer.style.backgroundImage = '';
+        }
+
+        if (!themeClass) {
+          // Original technology experience
+          if (resetBtn) resetBtn.classList.remove('is-visible');
+          return;
+        }
+
+        document.body.classList.add('theme-transitioning');
+        document.body.classList.add(themeClass);
+
+        // Ambient bg layer (subtle extra photo)
+        const photos = CATEGORY_PHOTOS[state.purpose] || CATEGORY_PHOTOS.other;
+        if (themeBgLayer && photos && photos.length) {
+          const url = photos[0];
+          themeBgLayer.style.backgroundImage = `url('${url}')`;
+          requestAnimationFrame(() => themeBgLayer.classList.add('is-active'));
+        }
+
+        // Hero slider
+        startHeroSlider(state.purpose);
+
+        if (resetBtn) {
+          resetBtn.classList.add('is-visible');
+          resetBtn.textContent = t('reset_pref');
+        }
+
+        setTimeout(() => document.body.classList.remove('theme-transitioning'), 800);
+      }
+
+      function finishOnboarding(skip = false) {
+        if (skip) {
+          state.purpose = null;
+          state.style = null;
+        }
+        state.completed = true;
+        savePrefs();
+        if (typeof setLanguage === 'function') {
+          setLanguage(state.lang);
+        }
+        applyTheme();
+        closeOverlay();
+      }
+
+      function openOverlay() {
+        overlay.classList.add('is-active');
+        document.body.style.overflow = 'hidden';
+      }
+
+      function closeOverlay() {
+        overlay.classList.remove('is-active');
+        document.body.style.overflow = '';
+      }
+
+      function resetPersonalization() {
+        state = { step: 0, lang: state.lang || 'en', purpose: null, style: null, completed: false };
+        clearThemeClasses();
+        stopHeroSlider();
+        if (themeBgLayer) {
+          themeBgLayer.classList.remove('is-active');
+          themeBgLayer.style.backgroundImage = '';
+        }
+        if (resetBtn) resetBtn.classList.remove('is-visible');
+        try {
+          localStorage.removeItem(STORAGE_KEY);
+          localStorage.removeItem('ks_portfolio_prefs_v3');
+        } catch (_) {}
+        showStep(0);
+        applyOnboardingI18n();
+        openOverlay();
+      }
+
+      // Event wiring
+      document.querySelectorAll('#onboardingLangGrid .onboarding-lang-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('#onboardingLangGrid .onboarding-lang-btn').forEach((b) => b.classList.remove('is-selected'));
+          btn.classList.add('is-selected');
+          state.lang = btn.getAttribute('data-lang') || 'en';
+          applyOnboardingI18n();
+        });
+      });
+
+      document.getElementById('onboardingContinueLang')?.addEventListener('click', () => {
+        applyOnboardingI18n();
+        showStep(1);
+      });
+
+      document.getElementById('onboardingContinuePurpose')?.addEventListener('click', () => {
+        if (!state.purpose) return;
+        showStep(2);
+      });
+
+      document.getElementById('onboardingFinishBtn')?.addEventListener('click', () => {
+        if (!state.style) return;
+        finishOnboarding(false);
+      });
+
+      document.getElementById('onboardingCloseBtn')?.addEventListener('click', () => finishOnboarding(true));
+      document.getElementById('onboardingSkipBtn')?.addEventListener('click', () => finishOnboarding(true));
+      document.querySelectorAll('[data-onb-skip]').forEach((btn) => {
+        btn.addEventListener('click', () => finishOnboarding(true));
+      });
+      document.querySelectorAll('[data-onb-back]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          if (state.step > 0) showStep(state.step - 1);
+        });
+      });
+
+      if (resetBtn) {
+        resetBtn.addEventListener('click', resetPersonalization);
+      }
+
+      // Boot
+      const saved = loadPrefs();
+      if (saved && saved.completed) {
+        state.lang = saved.lang || 'en';
+        state.purpose = saved.purpose;
+        state.style = saved.style;
+        state.completed = true;
+        if (typeof setLanguage === 'function') setLanguage(state.lang);
+        applyTheme();
+      } else {
+        state.lang = 'en';
+        applyOnboardingI18n();
+        showStep(0);
+        setTimeout(() => openOverlay(), 300);
+      }
+    })();
