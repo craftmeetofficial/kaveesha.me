@@ -2,6 +2,7 @@
        Kaveesha Shehara — Portfolio & Who Am I Stylesheet
        Palette: Deep Obsidian (#07050F), Crisp White (#FFFFFF),
                 Electric Blue (#00C8FF / #00F0FF), Racing Red (#FF2A85 / #FF5CA8)
+       Extended with dynamic theme system for personalized experiences
        ========================================================================== */
 
     :root {
@@ -12,6 +13,25 @@
       --electric-bright: #00F0FF;
       --racing-red: #FF2A85;
       --racing-bright: #FF5CA8;
+
+      /* Dynamic theme tokens (overridden by theme classes) */
+      --theme-bg: #07050F;
+      --theme-surface: rgba(9, 6, 20, 0.92);
+      --theme-card: rgba(9, 6, 20, 0.85);
+      --theme-accent: #00C8FF;
+      --theme-accent-bright: #00F0FF;
+      --theme-secondary: #FF2A85;
+      --theme-secondary-bright: #FF5CA8;
+      --theme-text: #FFFFFF;
+      --theme-text-muted: rgba(255, 255, 255, 0.75);
+      --theme-border: rgba(255, 255, 255, 0.16);
+      --theme-gradient-start: #160729;
+      --theme-gradient-mid: #0C0619;
+      --theme-gradient-end: #07050F;
+      --theme-hero-glow: rgba(255, 42, 133, 0.22);
+      --theme-font-display: 'Orbitron', sans-serif;
+      --theme-radius: 0.75rem;
+      --theme-overlay: rgba(7, 5, 15, 0.55);
     }
 
     * {
@@ -20,11 +40,12 @@
 
     html,
     body {
-      background-color: var(--bg-black);
-      color: var(--crisp-white);
+      background-color: var(--theme-bg);
+      color: var(--theme-text);
       font-family: 'Inter', sans-serif;
       overflow-x: hidden;
       -webkit-font-smoothing: antialiased;
+      transition: background-color 0.8s ease, color 0.5s ease;
     }
 
     /* Custom precision pointer & glowing particle trail on fine-pointer devices */
@@ -37,7 +58,7 @@
       textarea,
       select,
       [role="button"] {
-        cursor: none;
+        cursor: none !important;
       }
     }
 
@@ -51,10 +72,10 @@
       margin-top: -12px;
       border-radius: 9999px;
       pointer-events: none;
-      z-index: 70;
+      z-index: 100050;
       opacity: 0;
       transform: translate3d(-9999px, -9999px, 0) scale(1);
-      transition: opacity 0.18s ease, transform 0.12s ease-out;
+      transition: opacity 0.18s ease, transform 0.12s ease-out, border-color 0.2s ease, box-shadow 0.2s ease;
       background: radial-gradient(
         circle,
         rgba(0, 240, 255, 0.95) 0%,
@@ -99,15 +120,16 @@
       position: fixed;
       border-radius: 9999px;
       pointer-events: none;
-      z-index: 65;
+      z-index: 100040;
       animation: waterDropletFade 0.52s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
 
     /* Aerospace backdrop & subtle grid lines */
     .aerospace-canvas-bg {
       background:
-        radial-gradient(ellipse at 50% 8%, rgba(255, 42, 133, 0.22) 0%, rgba(255, 107, 61, 0.12) 32%, rgba(0, 229, 255, 0.11) 58%, rgba(7, 5, 15, 1) 84%),
-        linear-gradient(180deg, #160729 0%, #0C0619 45%, #07050F 100%);
+        radial-gradient(ellipse at 50% 8%, var(--theme-hero-glow) 0%, rgba(255, 107, 61, 0.12) 32%, rgba(0, 229, 255, 0.11) 58%, var(--theme-bg) 84%),
+        linear-gradient(180deg, var(--theme-gradient-start) 0%, var(--theme-gradient-mid) 45%, var(--theme-gradient-end) 100%);
+      transition: background 1s ease;
     }
 
     .orbital-hairlines {
@@ -118,14 +140,15 @@
     }
 
     .spacex-hero-title {
-      font-family: 'Orbitron', sans-serif;
+      font-family: var(--theme-font-display);
       font-weight: 900;
       letter-spacing: 0.16em;
       text-transform: uppercase;
-      background: linear-gradient(180deg, #FFFFFF 0%, #FFE3F0 55%, #FF4D9D 100%);
+      background: linear-gradient(180deg, #FFFFFF 0%, #FFE3F0 55%, var(--theme-secondary) 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       filter: drop-shadow(0 8px 30px rgba(255, 42, 133, 0.35));
+      transition: filter 0.6s ease;
     }
 
     /* Custom scrollbar */
@@ -134,16 +157,16 @@
     }
 
     ::-webkit-scrollbar-track {
-      background: #07050F;
+      background: var(--theme-bg);
     }
 
     ::-webkit-scrollbar-thumb {
-      background: linear-gradient(180deg, #FF2A85, #00C8FF);
+      background: linear-gradient(180deg, var(--theme-secondary), var(--theme-accent));
       border-radius: 3px;
     }
 
     ::-webkit-scrollbar-thumb:hover {
-      background: #00F0FF;
+      background: var(--theme-accent-bright);
     }
 
     /* Right-hand scroll progress rail on desktop */
@@ -168,14 +191,14 @@
 
     .hud-frame {
       position: relative;
-      border: 1px solid rgba(255, 255, 255, 0.16);
-      background: rgba(9, 6, 20, 0.92);
-      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      border: 1px solid var(--theme-border);
+      background: var(--theme-surface);
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.5s ease;
     }
 
     .hud-frame:hover {
-      border-color: #00F0FF;
-      box-shadow: 0 0 24px rgba(255, 42, 133, 0.18);
+      border-color: var(--theme-accent-bright);
+      box-shadow: 0 0 24px color-mix(in srgb, var(--theme-secondary) 18%, transparent);
     }
 
     /* Tap/click burst sparkles */
@@ -194,7 +217,7 @@
       position: fixed;
       border-radius: 9999px;
       pointer-events: none;
-      z-index: 60;
+      z-index: 100030;
       animation: clickSparkBurst 0.52s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
 
@@ -233,7 +256,7 @@
       content: "|";
       display: inline-block;
       margin-left: 2px;
-      color: #00F0FF;
+      color: var(--theme-accent-bright);
       font-weight: 700;
       animation: whoCursorBlink 0.75s infinite;
     }
@@ -261,3 +284,1227 @@
     .beacon-dot {
       animation: beaconPulse 2s infinite ease-in-out;
     }
+
+    /* ==========================================================================
+       THEME PRESETS — applied via body class
+       ========================================================================== */
+
+    /* Bakery / Cake Shop */
+    body.theme-bakery {
+      --theme-bg: #FFF5F7;
+      --theme-surface: rgba(255, 250, 252, 0.92);
+      --theme-card: rgba(255, 240, 245, 0.9);
+      --theme-accent: #E91E8C;
+      --theme-accent-bright: #FF6BB5;
+      --theme-secondary: #F48FB1;
+      --theme-secondary-bright: #FCE4EC;
+      --theme-text: #3D1F2A;
+      --theme-text-muted: rgba(61, 31, 42, 0.72);
+      --theme-border: rgba(233, 30, 140, 0.22);
+      --theme-gradient-start: #FFE4EC;
+      --theme-gradient-mid: #FFF0F5;
+      --theme-gradient-end: #FFF8FA;
+      --theme-hero-glow: rgba(255, 182, 193, 0.45);
+      --theme-font-display: 'Space Grotesk', sans-serif;
+      --theme-overlay: rgba(255, 240, 245, 0.65);
+    }
+
+    body.theme-bakery .aerospace-canvas-bg {
+      background:
+        radial-gradient(ellipse at 30% 20%, rgba(255, 182, 193, 0.5) 0%, transparent 50%),
+        radial-gradient(ellipse at 70% 80%, rgba(255, 228, 225, 0.4) 0%, transparent 45%),
+        linear-gradient(180deg, #FFE4EC 0%, #FFF5F7 50%, #FFF8FA 100%);
+    }
+
+    body.theme-bakery .spacex-hero-title {
+      background: linear-gradient(180deg, #5C2A3D 0%, #E91E8C 55%, #F48FB1 100%);
+      -webkit-background-clip: text;
+      filter: drop-shadow(0 4px 20px rgba(233, 30, 140, 0.25));
+    }
+
+    body.theme-bakery .orbital-hairlines {
+      background-image:
+        linear-gradient(to right, rgba(233, 30, 140, 0.06) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(244, 143, 177, 0.05) 1px, transparent 1px);
+    }
+
+    body.theme-bakery header {
+      background: rgba(255, 245, 247, 0.95) !important;
+      border-color: rgba(233, 30, 140, 0.2) !important;
+    }
+
+    /* PC Shop / Gaming */
+    body.theme-pcshop {
+      --theme-bg: #0A0A12;
+      --theme-surface: rgba(12, 12, 24, 0.94);
+      --theme-card: rgba(16, 12, 32, 0.9);
+      --theme-accent: #7B61FF;
+      --theme-accent-bright: #A78BFA;
+      --theme-secondary: #00E5FF;
+      --theme-secondary-bright: #67E8F9;
+      --theme-text: #F0F4FF;
+      --theme-text-muted: rgba(240, 244, 255, 0.7);
+      --theme-border: rgba(123, 97, 255, 0.28);
+      --theme-gradient-start: #12081F;
+      --theme-gradient-mid: #0B0A18;
+      --theme-gradient-end: #06060E;
+      --theme-hero-glow: rgba(123, 97, 255, 0.35);
+      --theme-font-display: 'Orbitron', sans-serif;
+      --theme-overlay: rgba(10, 10, 18, 0.6);
+    }
+
+    body.theme-pcshop .aerospace-canvas-bg {
+      background:
+        radial-gradient(ellipse at 20% 30%, rgba(123, 97, 255, 0.35) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 70%, rgba(0, 229, 255, 0.2) 0%, transparent 45%),
+        linear-gradient(180deg, #12081F 0%, #0B0A18 50%, #06060E 100%);
+    }
+
+    body.theme-pcshop .spacex-hero-title {
+      background: linear-gradient(180deg, #FFFFFF 0%, #A78BFA 50%, #00E5FF 100%);
+      -webkit-background-clip: text;
+      filter: drop-shadow(0 0 30px rgba(123, 97, 255, 0.5));
+    }
+
+    /* Business */
+    body.theme-business {
+      --theme-bg: #0F172A;
+      --theme-surface: rgba(15, 23, 42, 0.94);
+      --theme-card: rgba(30, 41, 59, 0.9);
+      --theme-accent: #3B82F6;
+      --theme-accent-bright: #60A5FA;
+      --theme-secondary: #94A3B8;
+      --theme-secondary-bright: #CBD5E1;
+      --theme-text: #F8FAFC;
+      --theme-text-muted: rgba(248, 250, 252, 0.72);
+      --theme-border: rgba(59, 130, 246, 0.25);
+      --theme-gradient-start: #1E293B;
+      --theme-gradient-mid: #0F172A;
+      --theme-gradient-end: #020617;
+      --theme-hero-glow: rgba(59, 130, 246, 0.25);
+      --theme-font-display: 'Space Grotesk', sans-serif;
+      --theme-overlay: rgba(15, 23, 42, 0.55);
+    }
+
+    body.theme-business .aerospace-canvas-bg {
+      background:
+        radial-gradient(ellipse at 50% 0%, rgba(59, 130, 246, 0.2) 0%, transparent 55%),
+        linear-gradient(180deg, #1E293B 0%, #0F172A 50%, #020617 100%);
+    }
+
+    body.theme-business .spacex-hero-title {
+      background: linear-gradient(180deg, #FFFFFF 0%, #94A3B8 60%, #3B82F6 100%);
+      -webkit-background-clip: text;
+      filter: drop-shadow(0 4px 24px rgba(59, 130, 246, 0.3));
+    }
+
+    /* Restaurant / Hotel */
+    body.theme-restaurant {
+      --theme-bg: #1C1410;
+      --theme-surface: rgba(28, 20, 16, 0.94);
+      --theme-card: rgba(40, 28, 22, 0.9);
+      --theme-accent: #D4A574;
+      --theme-accent-bright: #E8C9A0;
+      --theme-secondary: #C45C26;
+      --theme-secondary-bright: #E07A3D;
+      --theme-text: #FDF6E3;
+      --theme-text-muted: rgba(253, 246, 227, 0.72);
+      --theme-border: rgba(212, 165, 116, 0.28);
+      --theme-gradient-start: #2A1F18;
+      --theme-gradient-mid: #1C1410;
+      --theme-gradient-end: #0F0B08;
+      --theme-hero-glow: rgba(212, 165, 116, 0.3);
+      --theme-font-display: 'Space Grotesk', sans-serif;
+      --theme-overlay: rgba(28, 20, 16, 0.6);
+    }
+
+    body.theme-restaurant .aerospace-canvas-bg {
+      background:
+        radial-gradient(ellipse at 40% 20%, rgba(212, 165, 116, 0.25) 0%, transparent 50%),
+        radial-gradient(ellipse at 70% 80%, rgba(196, 92, 38, 0.15) 0%, transparent 45%),
+        linear-gradient(180deg, #2A1F18 0%, #1C1410 55%, #0F0B08 100%);
+    }
+
+    body.theme-restaurant .spacex-hero-title {
+      background: linear-gradient(180deg, #FDF6E3 0%, #E8C9A0 50%, #D4A574 100%);
+      -webkit-background-clip: text;
+      filter: drop-shadow(0 6px 24px rgba(212, 165, 116, 0.35));
+    }
+
+    /* Personal Portfolio (minimal creative) */
+    body.theme-portfolio {
+      --theme-bg: #FAFAFA;
+      --theme-surface: rgba(255, 255, 255, 0.92);
+      --theme-card: rgba(248, 250, 252, 0.95);
+      --theme-accent: #6366F1;
+      --theme-accent-bright: #818CF8;
+      --theme-secondary: #0F172A;
+      --theme-secondary-bright: #334155;
+      --theme-text: #0F172A;
+      --theme-text-muted: rgba(15, 23, 42, 0.68);
+      --theme-border: rgba(99, 102, 241, 0.18);
+      --theme-gradient-start: #F1F5F9;
+      --theme-gradient-mid: #F8FAFC;
+      --theme-gradient-end: #FFFFFF;
+      --theme-hero-glow: rgba(99, 102, 241, 0.12);
+      --theme-font-display: 'Space Grotesk', sans-serif;
+      --theme-overlay: rgba(248, 250, 252, 0.7);
+    }
+
+    body.theme-portfolio .aerospace-canvas-bg {
+      background:
+        radial-gradient(ellipse at 50% 10%, rgba(99, 102, 241, 0.08) 0%, transparent 50%),
+        linear-gradient(180deg, #F1F5F9 0%, #F8FAFC 50%, #FFFFFF 100%);
+    }
+
+    body.theme-portfolio .spacex-hero-title {
+      background: linear-gradient(180deg, #0F172A 0%, #334155 50%, #6366F1 100%);
+      -webkit-background-clip: text;
+      filter: drop-shadow(0 2px 12px rgba(99, 102, 241, 0.15));
+    }
+
+    body.theme-portfolio header {
+      background: rgba(255, 255, 255, 0.95) !important;
+      border-color: rgba(15, 23, 42, 0.08) !important;
+    }
+
+    body.theme-portfolio .orbital-hairlines {
+      background-image:
+        linear-gradient(to right, rgba(99, 102, 241, 0.04) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(15, 23, 42, 0.03) 1px, transparent 1px);
+    }
+
+    /* Online Store */
+    body.theme-store {
+      --theme-bg: #0C0A1A;
+      --theme-surface: rgba(18, 14, 36, 0.94);
+      --theme-card: rgba(24, 18, 48, 0.9);
+      --theme-accent: #F43F5E;
+      --theme-accent-bright: #FB7185;
+      --theme-secondary: #A855F7;
+      --theme-secondary-bright: #C084FC;
+      --theme-text: #FDF4FF;
+      --theme-text-muted: rgba(253, 244, 255, 0.72);
+      --theme-border: rgba(244, 63, 94, 0.25);
+      --theme-gradient-start: #1A0F2E;
+      --theme-gradient-mid: #0C0A1A;
+      --theme-gradient-end: #05040C;
+      --theme-hero-glow: rgba(244, 63, 94, 0.28);
+      --theme-font-display: 'Orbitron', sans-serif;
+      --theme-overlay: rgba(12, 10, 26, 0.6);
+    }
+
+    body.theme-store .aerospace-canvas-bg {
+      background:
+        radial-gradient(ellipse at 25% 25%, rgba(244, 63, 94, 0.25) 0%, transparent 50%),
+        radial-gradient(ellipse at 75% 75%, rgba(168, 85, 247, 0.2) 0%, transparent 45%),
+        linear-gradient(180deg, #1A0F2E 0%, #0C0A1A 50%, #05040C 100%);
+    }
+
+    body.theme-store .spacex-hero-title {
+      background: linear-gradient(180deg, #FFFFFF 0%, #FB7185 50%, #A855F7 100%);
+      -webkit-background-clip: text;
+      filter: drop-shadow(0 0 28px rgba(244, 63, 94, 0.4));
+    }
+
+    /* ==========================================================================
+       ONBOARDING SYSTEM
+       ========================================================================== */
+
+    .onboarding-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 100000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(3, 2, 8, 0.88);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.45s ease, visibility 0.45s ease;
+      padding: 1rem;
+    }
+
+    .onboarding-overlay.is-active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .onboarding-panel {
+      width: 100%;
+      max-width: 560px;
+      max-height: min(92vh, 720px);
+      overflow-y: auto;
+      background: linear-gradient(165deg, rgba(18, 12, 36, 0.97) 0%, rgba(10, 6, 22, 0.98) 100%);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 1.5rem;
+      box-shadow:
+        0 0 0 1px rgba(0, 240, 255, 0.08),
+        0 25px 80px rgba(0, 0, 0, 0.55),
+        0 0 60px rgba(255, 42, 133, 0.12);
+      padding: 1.75rem 1.5rem 1.5rem;
+      position: relative;
+      transform: translateY(24px) scale(0.97);
+      transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .onboarding-overlay.is-active .onboarding-panel {
+      transform: translateY(0) scale(1);
+    }
+
+    @media (min-width: 640px) {
+      .onboarding-panel {
+        padding: 2.25rem 2rem 1.75rem;
+      }
+    }
+
+    .onboarding-close {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      width: 2.25rem;
+      height: 2.25rem;
+      border-radius: 0.6rem;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(0, 0, 0, 0.4);
+      color: #fff;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .onboarding-close:hover {
+      border-color: #FF2A85;
+      background: rgba(255, 42, 133, 0.25);
+    }
+
+    .onboarding-progress {
+      display: flex;
+      gap: 0.4rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .onboarding-progress-dot {
+      height: 4px;
+      flex: 1;
+      border-radius: 2px;
+      background: rgba(255, 255, 255, 0.12);
+      transition: background 0.35s ease;
+    }
+
+    .onboarding-progress-dot.is-done {
+      background: linear-gradient(90deg, #00F0FF, #FF2A85);
+    }
+
+    .onboarding-progress-dot.is-current {
+      background: #00F0FF;
+    }
+
+    .onboarding-step {
+      display: none;
+      animation: onboardingFadeIn 0.4s ease;
+    }
+
+    .onboarding-step.is-visible {
+      display: block;
+    }
+
+    @keyframes onboardingFadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .onboarding-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 1.5rem;
+      line-height: 1.25;
+      color: #fff;
+      margin-bottom: 0.5rem;
+    }
+
+    @media (min-width: 640px) {
+      .onboarding-title {
+        font-size: 1.75rem;
+      }
+    }
+
+    .onboarding-desc {
+      font-size: 0.9rem;
+      color: rgba(255, 255, 255, 0.7);
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+    }
+
+    .onboarding-options {
+      display: grid;
+      gap: 0.6rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .onboarding-option {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      padding: 0.85rem 1rem;
+      border-radius: 0.85rem;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.03);
+      color: #fff;
+      text-align: left;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: border-color 0.2s, background 0.2s, transform 0.15s;
+    }
+
+    .onboarding-option:hover {
+      border-color: rgba(0, 240, 255, 0.45);
+      background: rgba(0, 240, 255, 0.08);
+      transform: translateY(-1px);
+    }
+
+    .onboarding-option.is-selected {
+      border-color: #00F0FF;
+      background: rgba(0, 200, 255, 0.15);
+      box-shadow: 0 0 20px rgba(0, 240, 255, 0.15);
+    }
+
+    .onboarding-option-icon {
+      width: 2.25rem;
+      height: 2.25rem;
+      border-radius: 0.6rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.15rem;
+      background: rgba(255, 255, 255, 0.06);
+      flex-shrink: 0;
+    }
+
+    .onboarding-option.is-selected .onboarding-option-icon {
+      background: rgba(0, 240, 255, 0.2);
+    }
+
+    .onboarding-visual-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.65rem;
+      margin-bottom: 1.5rem;
+    }
+
+    @media (min-width: 480px) {
+      .onboarding-visual-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    .onboarding-visual-card {
+      position: relative;
+      aspect-ratio: 1;
+      border-radius: 0.9rem;
+      border: 2px solid transparent;
+      overflow: hidden;
+      background: #111;
+      transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+    }
+
+    .onboarding-visual-card:hover {
+      transform: scale(1.03);
+    }
+
+    .onboarding-visual-card.is-selected {
+      border-color: #00F0FF;
+      box-shadow: 0 0 0 2px rgba(0, 240, 255, 0.3), 0 8px 24px rgba(0, 0, 0, 0.4);
+    }
+
+    .onboarding-visual-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .onboarding-visual-label {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 0.4rem 0.5rem;
+      background: linear-gradient(transparent, rgba(0,0,0,0.85));
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: #fff;
+      text-align: center;
+    }
+
+    .onboarding-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+    }
+
+    .onboarding-btn {
+      padding: 0.7rem 1.25rem;
+      border-radius: 0.7rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      transition: background 0.2s, border-color 0.2s, transform 0.15s;
+    }
+
+    .onboarding-btn-primary {
+      background: linear-gradient(135deg, #00C8FF, #00F0FF);
+      color: #07050F;
+      border: none;
+    }
+
+    .onboarding-btn-primary:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(0, 240, 255, 0.35);
+    }
+
+    .onboarding-btn-primary:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .onboarding-btn-ghost {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: rgba(255, 255, 255, 0.75);
+    }
+
+    .onboarding-btn-ghost:hover {
+      border-color: rgba(255, 255, 255, 0.45);
+      color: #fff;
+    }
+
+    /* Language selection screen */
+    .onboarding-lang-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.65rem;
+      margin-bottom: 1.25rem;
+    }
+
+    @media (min-width: 480px) {
+      .onboarding-lang-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    .onboarding-lang-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 1rem 0.5rem;
+      border-radius: 0.9rem;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.03);
+      color: #fff;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: border-color 0.2s, background 0.2s, transform 0.15s;
+    }
+
+    .onboarding-lang-btn:hover {
+      border-color: rgba(0, 240, 255, 0.4);
+      background: rgba(0, 240, 255, 0.08);
+      transform: translateY(-2px);
+    }
+
+    .onboarding-lang-btn.is-selected {
+      border-color: #00F0FF;
+      background: rgba(0, 200, 255, 0.15);
+      box-shadow: 0 0 18px rgba(0, 240, 255, 0.2);
+    }
+
+    .onboarding-lang-flag {
+      font-size: 1.6rem;
+      line-height: 1;
+    }
+
+    /* Theme background image layers */
+    .theme-bg-layer {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 1s ease;
+      background-size: cover;
+      background-position: center;
+    }
+
+    .theme-bg-layer.is-active {
+      opacity: 0.35;
+    }
+
+    body.theme-bakery .theme-bg-layer.is-active,
+    body.theme-restaurant .theme-bg-layer.is-active {
+      opacity: 0.42;
+    }
+
+    body.theme-portfolio .theme-bg-layer.is-active {
+      opacity: 0.18;
+    }
+
+    /* Reset personalization floating button */
+    #resetPersonalizationBtn {
+      position: fixed;
+      bottom: 1.25rem;
+      left: 1.25rem;
+      z-index: 45;
+      padding: 0.55rem 0.9rem;
+      border-radius: 9999px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(7, 5, 15, 0.85);
+      color: rgba(255, 255, 255, 0.8);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s, visibility 0.3s, border-color 0.2s, color 0.2s;
+      backdrop-filter: blur(8px);
+    }
+
+    #resetPersonalizationBtn.is-visible {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    #resetPersonalizationBtn:hover {
+      border-color: var(--theme-accent-bright);
+      color: #fff;
+    }
+
+    /* Ensure theme colors propagate to common Tailwind-like classes */
+    body.theme-bakery .bg-obsidian,
+    body.theme-portfolio .bg-obsidian {
+      background-color: var(--theme-surface) !important;
+    }
+
+    body.theme-bakery .text-white,
+    body.theme-portfolio .text-white {
+      color: var(--theme-text) !important;
+    }
+
+    body.theme-bakery .border-white\/15,
+    body.theme-bakery .border-white\/20,
+    body.theme-portfolio .border-white\/15,
+    body.theme-portfolio .border-white\/20 {
+      border-color: var(--theme-border) !important;
+    }
+
+    /* Smooth content transition after theme apply */
+    body.theme-transitioning main,
+    body.theme-transitioning #whoAmIView {
+      transition: opacity 0.6s ease;
+    }
+
+/* ==========================================================================
+   HERO PHOTO SLIDER — fade + zoom + Ken Burns
+   Active only when a non-tech theme is applied
+   ========================================================================== */
+
+.hero-photo-slider {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.8s ease, visibility 0.8s ease;
+}
+
+body[class*="theme-"]:not(.theme-transitioning) .hero-photo-slider.is-enabled {
+  opacity: 1;
+  visibility: visible;
+}
+
+.hero-photo-slide {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+  transform: scale(1.08);
+  transition: opacity 1.4s cubic-bezier(0.4, 0, 0.2, 1), transform 8s ease-out;
+  will-change: opacity, transform;
+}
+
+.hero-photo-slide.is-active {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.hero-photo-slide.is-kenburns {
+  animation: heroKenBurns 12s ease-in-out infinite alternate;
+}
+
+@keyframes heroKenBurns {
+  0% { transform: scale(1) translate(0, 0); }
+  100% { transform: scale(1.12) translate(-1.5%, -1%); }
+}
+
+.hero-photo-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--theme-bg) 55%, transparent) 0%,
+    color-mix(in srgb, var(--theme-bg) 25%, transparent) 40%,
+    color-mix(in srgb, var(--theme-bg) 70%, transparent) 100%
+  );
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-photo-slide {
+    transition: opacity 0.6s ease !important;
+    transform: none !important;
+    animation: none !important;
+  }
+  .hero-photo-slide.is-active {
+    transform: none !important;
+  }
+}
+
+/* ==========================================================================
+   FULL UI TRANSFORMATION — contrast-safe text & component overrides
+   Applied when any theme-* class is on body
+   ========================================================================== */
+
+body[class*="theme-"] {
+  color: var(--theme-text);
+}
+
+body[class*="theme-"] .text-white,
+body[class*="theme-"] .text-white\/90,
+body[class*="theme-"] .text-white\/85,
+body[class*="theme-"] .text-white\/80,
+body[class*="theme-"] .text-white\/75,
+body[class*="theme-"] .text-white\/70,
+body[class*="theme-"] .text-white\/65,
+body[class*="theme-"] .text-white\/60,
+body[class*="theme-"] .text-white\/55,
+body[class*="theme-"] .text-white\/50,
+body[class*="theme-"] .text-white\/45 {
+  color: var(--theme-text) !important;
+}
+
+body[class*="theme-"] .text-white\/75,
+body[class*="theme-"] .text-white\/70,
+body[class*="theme-"] .text-white\/65,
+body[class*="theme-"] .text-white\/60,
+body[class*="theme-"] .text-white\/55,
+body[class*="theme-"] .text-white\/50,
+body[class*="theme-"] .text-white\/45 {
+  color: var(--theme-text-muted) !important;
+}
+
+body[class*="theme-"] .text-electricBright,
+body[class*="theme-"] .text-electric {
+  color: var(--theme-accent-bright) !important;
+}
+
+body[class*="theme-"] .text-racingBright,
+body[class*="theme-"] .text-racing {
+  color: var(--theme-secondary) !important;
+}
+
+body[class*="theme-"] .bg-obsidian,
+body[class*="theme-"] .bg-obsidian\/95,
+body[class*="theme-"] .bg-obsidian\/90,
+body[class*="theme-"] .bg-obsidian\/85,
+body[class*="theme-"] .bg-obsidian\/25,
+body[class*="theme-"] .bg-black,
+body[class*="theme-"] .bg-black\/75 {
+  background-color: var(--theme-surface) !important;
+}
+
+body[class*="theme-"] .border-white\/15,
+body[class*="theme-"] .border-white\/20,
+body[class*="theme-"] .border-white\/25,
+body[class*="theme-"] .border-white\/30,
+body[class*="theme-"] .border-white\/10 {
+  border-color: var(--theme-border) !important;
+}
+
+body[class*="theme-"] .hud-frame {
+  background: var(--theme-surface);
+  border-color: var(--theme-border);
+}
+
+body[class*="theme-"] .hud-frame:hover {
+  border-color: var(--theme-accent-bright);
+  box-shadow: 0 0 24px color-mix(in srgb, var(--theme-accent) 20%, transparent);
+}
+
+body[class*="theme-"] header {
+  background: color-mix(in srgb, var(--theme-bg) 92%, transparent) !important;
+  border-color: var(--theme-border) !important;
+  backdrop-filter: blur(12px);
+}
+
+body[class*="theme-"] .bg-electric,
+body[class*="theme-"] .bg-electric\/15,
+body[class*="theme-"] .bg-electric\/25 {
+  background-color: var(--theme-accent) !important;
+  color: #fff !important;
+}
+
+body[class*="theme-"] .bg-racing,
+body[class*="theme-"] .bg-racing\/15,
+body[class*="theme-"] .bg-racing\/20,
+body[class*="theme-"] .bg-racing\/25 {
+  background-color: var(--theme-secondary) !important;
+  color: #fff !important;
+}
+
+body[class*="theme-"] .hover\:bg-electricBright:hover,
+body[class*="theme-"] .hover\:bg-electric:hover {
+  background-color: var(--theme-accent-bright) !important;
+}
+
+body[class*="theme-"] .hover\:border-electricBright:hover,
+body[class*="theme-"] .hover\:border-racingBright:hover {
+  border-color: var(--theme-accent-bright) !important;
+}
+
+body[class*="theme-"] .hover\:text-electricBright:hover,
+body[class*="theme-"] .hover\:text-racingBright:hover {
+  color: var(--theme-accent-bright) !important;
+}
+
+/* Light themes need dark text on cards and stronger contrast */
+body.theme-bakery .spacex-hero-title,
+body.theme-portfolio .spacex-hero-title {
+  -webkit-text-fill-color: transparent;
+}
+
+body.theme-bakery header .text-white\/90,
+body.theme-portfolio header .text-white\/90,
+body.theme-bakery header span,
+body.theme-portfolio header span {
+  color: var(--theme-text) !important;
+}
+
+body.theme-bakery .view-tab-btn,
+body.theme-portfolio .view-tab-btn {
+  color: var(--theme-text) !important;
+}
+
+body.theme-bakery .lang-btn,
+body.theme-portfolio .lang-btn {
+  color: var(--theme-text) !important;
+}
+
+body.theme-bakery .lang-btn.bg-electric,
+body.theme-portfolio .lang-btn.bg-electric,
+body.theme-bakery .view-tab-btn.bg-electric,
+body.theme-portfolio .view-tab-btn.bg-electric {
+  background-color: var(--theme-accent) !important;
+  color: #fff !important;
+}
+
+/* Project / about images get hover zoom in themed modes */
+body[class*="theme-"] #devPhotoPreview,
+body[class*="theme-"] #projectPhotoPreview,
+body[class*="theme-"] #setupPhotoPreview {
+  transition: transform 0.5s ease;
+}
+
+body[class*="theme-"] .group:hover #devPhotoPreview,
+body[class*="theme-"] .group:hover #projectPhotoPreview,
+body[class*="theme-"] .group:hover #setupPhotoPreview {
+  transform: scale(1.04);
+}
+
+/* Section image reveal on scroll (subtle) */
+@keyframes themeImageReveal {
+  from { opacity: 0.4; transform: scale(1.04); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+body[class*="theme-"] .shard-module img {
+  animation: themeImageReveal 0.9s ease both;
+}
+
+/* Stronger bakery atmosphere */
+body.theme-bakery .aerospace-canvas-bg {
+  background:
+    radial-gradient(ellipse at 25% 15%, rgba(255, 182, 193, 0.55) 0%, transparent 45%),
+    radial-gradient(ellipse at 75% 70%, rgba(255, 228, 196, 0.35) 0%, transparent 40%),
+    linear-gradient(180deg, #FFE4EC 0%, #FFF5F7 45%, #FFF8FA 100%) !important;
+}
+
+body.theme-bakery .hero-photo-overlay {
+  background: linear-gradient(180deg, rgba(255, 245, 247, 0.75) 0%, rgba(255, 245, 247, 0.35) 45%, rgba(255, 245, 247, 0.8) 100%);
+}
+
+/* Stronger PC / gaming atmosphere */
+body.theme-pcshop .aerospace-canvas-bg {
+  background:
+    radial-gradient(ellipse at 15% 25%, rgba(123, 97, 255, 0.4) 0%, transparent 50%),
+    radial-gradient(ellipse at 85% 75%, rgba(0, 229, 255, 0.25) 0%, transparent 45%),
+    linear-gradient(180deg, #12081F 0%, #0B0A18 50%, #06060E 100%) !important;
+}
+
+body.theme-pcshop .hero-photo-overlay {
+  background: linear-gradient(180deg, rgba(10, 10, 18, 0.7) 0%, rgba(10, 10, 18, 0.35) 45%, rgba(10, 10, 18, 0.85) 100%);
+}
+
+/* Business */
+body.theme-business .hero-photo-overlay {
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.75) 0%, rgba(15, 23, 42, 0.4) 45%, rgba(15, 23, 42, 0.85) 100%);
+}
+
+/* Restaurant */
+body.theme-restaurant .hero-photo-overlay {
+  background: linear-gradient(180deg, rgba(28, 20, 16, 0.7) 0%, rgba(28, 20, 16, 0.35) 45%, rgba(28, 20, 16, 0.85) 100%);
+}
+
+/* Portfolio light */
+body.theme-portfolio .hero-photo-overlay {
+  background: linear-gradient(180deg, rgba(248, 250, 252, 0.8) 0%, rgba(248, 250, 252, 0.45) 45%, rgba(248, 250, 252, 0.88) 100%);
+}
+
+body.theme-portfolio .aerospace-canvas-bg {
+  background:
+    radial-gradient(ellipse at 50% 10%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
+    linear-gradient(180deg, #F1F5F9 0%, #F8FAFC 50%, #FFFFFF 100%) !important;
+}
+
+/* Store */
+body.theme-store .hero-photo-overlay {
+  background: linear-gradient(180deg, rgba(12, 10, 26, 0.7) 0%, rgba(12, 10, 26, 0.35) 45%, rgba(12, 10, 26, 0.85) 100%);
+}
+
+/* Ensure mono / secondary labels remain readable */
+body[class*="theme-"] .font-mono {
+  color: inherit;
+}
+
+/* Reset button contrast */
+body.theme-bakery #resetPersonalizationBtn,
+body.theme-portfolio #resetPersonalizationBtn {
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--theme-text);
+  border-color: var(--theme-border);
+}
+
+/* Selection colors */
+body[class*="theme-"] ::selection {
+  background: var(--theme-accent);
+  color: #fff;
+}
+
+/* ==========================================================================
+   CRITICAL TEXT VISIBILITY FIXES
+   Force readable contrast on every themed surface
+   ========================================================================== */
+
+/* ---- Light themes (Bakery + Portfolio): force dark readable text ---- */
+body.theme-bakery,
+body.theme-portfolio {
+  color: var(--theme-text) !important;
+}
+
+body.theme-bakery *:not(svg):not(path):not(.spacex-hero-title):not(.onboarding-overlay *):not(.onboarding-panel *),
+body.theme-portfolio *:not(svg):not(path):not(.spacex-hero-title):not(.onboarding-overlay *):not(.onboarding-panel *) {
+  /* don't blanket everything — target common text carriers */
+}
+
+body.theme-bakery .text-white,
+body.theme-bakery .text-white\/90,
+body.theme-bakery .text-white\/85,
+body.theme-bakery .text-white\/80,
+body.theme-bakery .text-white\/75,
+body.theme-bakery .text-white\/70,
+body.theme-bakery .text-white\/65,
+body.theme-bakery .text-white\/60,
+body.theme-bakery .text-white\/55,
+body.theme-bakery .text-white\/50,
+body.theme-bakery .text-white\/45,
+body.theme-bakery [class*="text-white"],
+body.theme-portfolio .text-white,
+body.theme-portfolio .text-white\/90,
+body.theme-portfolio .text-white\/85,
+body.theme-portfolio .text-white\/80,
+body.theme-portfolio .text-white\/75,
+body.theme-portfolio .text-white\/70,
+body.theme-portfolio .text-white\/65,
+body.theme-portfolio .text-white\/60,
+body.theme-portfolio .text-white\/55,
+body.theme-portfolio .text-white\/50,
+body.theme-portfolio .text-white\/45,
+body.theme-portfolio [class*="text-white"] {
+  color: var(--theme-text) !important;
+}
+
+body.theme-bakery .text-white\/75,
+body.theme-bakery .text-white\/70,
+body.theme-bakery .text-white\/65,
+body.theme-bakery .text-white\/60,
+body.theme-bakery .text-white\/55,
+body.theme-bakery .text-white\/50,
+body.theme-bakery .text-white\/45,
+body.theme-portfolio .text-white\/75,
+body.theme-portfolio .text-white\/70,
+body.theme-portfolio .text-white\/65,
+body.theme-portfolio .text-white\/60,
+body.theme-portfolio .text-white\/55,
+body.theme-portfolio .text-white\/50,
+body.theme-portfolio .text-white\/45 {
+  color: var(--theme-text-muted) !important;
+}
+
+/* Accent labels on light themes */
+body.theme-bakery .text-electricBright,
+body.theme-bakery .text-electric,
+body.theme-bakery [class*="text-electric"],
+body.theme-portfolio .text-electricBright,
+body.theme-portfolio .text-electric,
+body.theme-portfolio [class*="text-electric"] {
+  color: var(--theme-accent) !important;
+}
+
+body.theme-bakery .text-racingBright,
+body.theme-bakery .text-racing,
+body.theme-bakery [class*="text-racing"],
+body.theme-portfolio .text-racingBright,
+body.theme-portfolio .text-racing,
+body.theme-portfolio [class*="text-racing"] {
+  color: var(--theme-secondary) !important;
+}
+
+/* Header, nav, buttons on light themes */
+body.theme-bakery header,
+body.theme-portfolio header,
+body.theme-bakery header a,
+body.theme-portfolio header a,
+body.theme-bakery header button,
+body.theme-portfolio header button,
+body.theme-bakery header span,
+body.theme-portfolio header span,
+body.theme-bakery nav,
+body.theme-portfolio nav {
+  color: var(--theme-text) !important;
+}
+
+body.theme-bakery .view-tab-btn,
+body.theme-portfolio .view-tab-btn,
+body.theme-bakery .lang-btn,
+body.theme-portfolio .lang-btn {
+  color: var(--theme-text) !important;
+}
+
+body.theme-bakery .view-tab-btn.bg-electric,
+body.theme-bakery .lang-btn.bg-electric,
+body.theme-portfolio .view-tab-btn.bg-electric,
+body.theme-portfolio .lang-btn.bg-electric,
+body.theme-bakery .bg-electric,
+body.theme-portfolio .bg-electric,
+body.theme-bakery .bg-racing,
+body.theme-portfolio .bg-racing {
+  color: #ffffff !important;
+  background-color: var(--theme-accent) !important;
+}
+
+/* Cards / HUD frames on light themes */
+body.theme-bakery .hud-frame,
+body.theme-portfolio .hud-frame,
+body.theme-bakery .hud-frame *,
+body.theme-portfolio .hud-frame * {
+  color: var(--theme-text);
+}
+
+body.theme-bakery .hud-frame .text-white,
+body.theme-portfolio .hud-frame .text-white {
+  color: var(--theme-text) !important;
+}
+
+/* Hero section labels */
+body.theme-bakery #heroSection,
+body.theme-portfolio #heroSection,
+body.theme-bakery #heroSection span,
+body.theme-portfolio #heroSection span,
+body.theme-bakery #heroSection p,
+body.theme-portfolio #heroSection p,
+body.theme-bakery #heroSection a,
+body.theme-portfolio #heroSection a {
+  color: var(--theme-text);
+}
+
+body.theme-bakery .spacex-hero-title {
+  background: linear-gradient(180deg, #4A1C2E 0%, #C2185B 50%, #E91E8C 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  filter: drop-shadow(0 2px 12px rgba(233, 30, 140, 0.3));
+}
+
+body.theme-portfolio .spacex-hero-title {
+  background: linear-gradient(180deg, #0F172A 0%, #334155 45%, #6366F1 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  filter: drop-shadow(0 2px 10px rgba(99, 102, 241, 0.2));
+}
+
+/* About / projects / matrix / workstation / footer */
+body.theme-bakery section,
+body.theme-portfolio section,
+body.theme-bakery section p,
+body.theme-portfolio section p,
+body.theme-bakery section h2,
+body.theme-portfolio section h2,
+body.theme-bakery section h3,
+body.theme-portfolio section h3,
+body.theme-bakery section h4,
+body.theme-portfolio section h4,
+body.theme-bakery section span,
+body.theme-portfolio section span,
+body.theme-bakery section a,
+body.theme-portfolio section a,
+body.theme-bakery section li,
+body.theme-portfolio section li {
+  color: var(--theme-text);
+}
+
+body.theme-bakery section .text-white\/75,
+body.theme-bakery section .text-white\/70,
+body.theme-bakery section .text-white\/60,
+body.theme-portfolio section .text-white\/75,
+body.theme-portfolio section .text-white\/70,
+body.theme-portfolio section .text-white\/60 {
+  color: var(--theme-text-muted) !important;
+}
+
+/* JS-rendered feature cards & hardware cards */
+body.theme-bakery #craftmeetFeaturesGrid,
+body.theme-bakery #craftmeetFeaturesGrid *,
+body.theme-bakery #hardwareGrid,
+body.theme-bakery #hardwareGrid *,
+body.theme-portfolio #craftmeetFeaturesGrid,
+body.theme-portfolio #craftmeetFeaturesGrid *,
+body.theme-portfolio #hardwareGrid,
+body.theme-portfolio #hardwareGrid * {
+  color: var(--theme-text) !important;
+}
+
+/* Polyglot code box stays readable */
+body.theme-bakery #polyglotCodeBox,
+body.theme-portfolio #polyglotCodeBox {
+  color: var(--theme-accent) !important;
+  background: #1a1a1a !important;
+  border-color: var(--theme-border) !important;
+}
+
+body.theme-bakery #craftmeetSimOutput,
+body.theme-portfolio #craftmeetSimOutput {
+  color: #e0e0e0 !important;
+  background: #1a1a1a !important;
+}
+
+/* Who Am I tab */
+body.theme-bakery #whoAmIView,
+body.theme-bakery #whoAmIView *,
+body.theme-portfolio #whoAmIView,
+body.theme-portfolio #whoAmIView * {
+  color: var(--theme-text);
+}
+
+body.theme-bakery #whoAmIView .who-type-line,
+body.theme-portfolio #whoAmIView .who-type-line {
+  color: var(--theme-text) !important;
+}
+
+/* Modal */
+body.theme-bakery #hardwareModal,
+body.theme-bakery #hardwareModal *,
+body.theme-portfolio #hardwareModal,
+body.theme-portfolio #hardwareModal * {
+  color: var(--theme-text);
+}
+
+body.theme-bakery #hardwareModal .hud-frame,
+body.theme-portfolio #hardwareModal .hud-frame {
+  background: var(--theme-surface) !important;
+  color: var(--theme-text) !important;
+}
+
+/* Inputs on light themes */
+body.theme-bakery input,
+body.theme-portfolio input,
+body.theme-bakery textarea,
+body.theme-portfolio textarea {
+  color: var(--theme-text) !important;
+  background: #fff !important;
+  border-color: var(--theme-border) !important;
+}
+
+body.theme-bakery input::placeholder,
+body.theme-portfolio input::placeholder {
+  color: var(--theme-text-muted) !important;
+}
+
+/* ---- Dark themes: ensure light text stays light ---- */
+body.theme-pcshop .text-white,
+body.theme-business .text-white,
+body.theme-restaurant .text-white,
+body.theme-store .text-white,
+body.theme-pcshop [class*="text-white"],
+body.theme-business [class*="text-white"],
+body.theme-restaurant [class*="text-white"],
+body.theme-store [class*="text-white"] {
+  color: var(--theme-text) !important;
+}
+
+body.theme-pcshop .text-electricBright,
+body.theme-business .text-electricBright,
+body.theme-restaurant .text-electricBright,
+body.theme-store .text-electricBright {
+  color: var(--theme-accent-bright) !important;
+}
+
+body.theme-pcshop .text-racingBright,
+body.theme-business .text-racingBright,
+body.theme-restaurant .text-racingBright,
+body.theme-store .text-racingBright {
+  color: var(--theme-secondary) !important;
+}
+
+/* Ensure body default inherits correctly */
+body.theme-bakery,
+body.theme-portfolio,
+body.theme-pcshop,
+body.theme-business,
+body.theme-restaurant,
+body.theme-store {
+  color: var(--theme-text);
+}
+
+/* Scroll rail & laser bar remain visible */
+body[class*="theme-"] #railVelocityTag {
+  color: var(--theme-accent-bright) !important;
+}
+
+body[class*="theme-"] #scrollLaserBar {
+  background: linear-gradient(to right, var(--theme-accent-bright), #fff, var(--theme-secondary)) !important;
+}
+
+/* Beacon dots keep accent */
+body[class*="theme-"] .beacon-dot {
+  background-color: var(--theme-secondary) !important;
+}
